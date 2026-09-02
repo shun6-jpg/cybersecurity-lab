@@ -1,35 +1,34 @@
-# Network Basics Lab
+# Network Basics / ネットワーク基礎
 
-## 目的
+VMware上のKali LinuxとUbuntu Serverを使用して、
+ネットワークの基本動作を実際に確認した記録です。
 
-VMware上にKali LinuxとUbuntu Serverを構築し、
-Host-onlyネットワーク上で通信できることを確認する。
+## Environment / 環境
 
-また、`ip addr` や `ping` を使用して、
-IPアドレス、ネットワークインターフェース、CIDR、ICMPなどの
-ネットワーク基礎を実際の環境と結びつけて理解する。
-
-## Environment
-
+- Windows 11
 - VMware Workstation
 - Kali Linux
 - Ubuntu Server 24.04 LTS
 - Network Mode: Host-only
 
-## Network
+## Lab Network / 検証ネットワーク
 
 | Machine | Interface | IPv4 |
 | --- | --- | --- |
 | Kali Linux | eth0 | `192.168.10.129/24` |
 | Ubuntu Server | ens33 | `192.168.10.128/24` |
 
-Network:
+Network: `192.168.10.0/24`
 
-`192.168.10.0/24`
+## Labs / 実習一覧
 
-## IPアドレス確認
+1. [IPアドレスとネットワークインターフェース](./01-ip-address.md)
+2. [pingとICMPによる疎通確認](./02-ping-icmp.md)
+3. [ARPとNeighbor Table](./03-arp-neighbor-table.md)
 
-### Kali Linux
+## Next
 
-```bash
-ip addr
+- ARPパケットの観察
+- tcpdumpによるパケットキャプチャ
+- ルーティング確認
+- DNS通信の確認
