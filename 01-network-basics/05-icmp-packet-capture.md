@@ -23,7 +23,7 @@ ICMP Echo RequestとICMP Echo Replyが実際に発生することを確認する
 - VMware Host-only Network
   - Network: `192.168.10.0/24`
  
-## 1. Ubunutu Serverで以下のコマンドを実行した。
+## 1. Ubuntu Serverで以下のコマンドを実行した。
 
     sudo tcpdump -ni ens33 icmp
 
@@ -83,10 +83,10 @@ Kali Linux
 
 Ubuntu Server
 
-つまり、Kali LinuxがUbunutu Serverに対して
+つまり、Kali LinuxがUbuntu Serverに対して
 ICMP echo Requestを送信している。
 
-## 5. ICMP echo Reply
+## 5. ICMP Echo Reply
 
 続いて以下の通信を確認した。
 
@@ -110,18 +110,18 @@ Kali LinuxへEcho Replyを返している。
 このReplyを受信できたため、
 Kali Linux側ではpingが成功した。
 
-## 6 . idとseq
+## 6. idとseq
 
 tcpdumpでは以下の情報も確認できた。
 
-    id 31684, seq 1
+    id 31864, seq 1
 
-`id`　は、どのping処理に属するICMP通信か識別するために利用される。
+`id` は、どのping処理に属するICMP通信か識別するために利用される。
 
-`seq`　はEcho Requestの通し番号である。
+`seq` はEcho Requestの通し番号である。
 
-今回は　`ping -c 1`　を使用したため、
-1回だけ送信され、　`seq 1`　となっている。
+今回は `ping -c 1` を使用したため、
+1回だけ送信され、 `seq 1` となっている。
 
 RequestとReplyで同じidとseqを確認できた。
 
