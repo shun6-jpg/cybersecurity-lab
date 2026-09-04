@@ -41,7 +41,7 @@ Kali LinuxからUbuntu Serverへ1回だけpingを実行した。
 
 ### Kali Linuxでの実行結果
 
-![Kali Linux ping result](./imgaes/05-kali-ping.png)
+![Kali Linux ping result](./images/05-kali-ping.png)
 
 結果:
 
@@ -57,7 +57,7 @@ Ubuntu Serverへの疎通が成功した。
 
 Ubuntu Server側のtcpdumpで以下の通信を確認した。
 
-![Ubuntu tcpdump ICMP capture](./images/05-ubuntu-tcpdump-icmp)
+![Ubuntu tcpdump ICMP capture](./images/05-ubuntu-tcpdump-icmp.png)
 
 主な結果:
 
