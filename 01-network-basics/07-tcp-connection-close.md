@@ -264,9 +264,11 @@ TCP Connection Closed
 
 ## Next
 
-次はTCP/UDPのポートについて確認し、
-Ubuntu Serverでどのポートが待ち受けているかを調査する。
+ここまでで `01-network-basics` の実験は一区切りとする。
 
-その後、Kali LinuxからNmapを使用して
-ポートスキャンを行い、
-サーバー側から見えるサービスを確認する。
+次は `02-port-scanning` に進み、
+Ubuntu Serverで待ち受けているポートを確認した後、
+Kali LinuxからNmapを使用して
+ネットワーク越しに見えるサービスを調査する。
+
+→ [02-port-scanning](../02-port-scanning/)
