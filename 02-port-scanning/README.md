@@ -19,6 +19,7 @@ Nmapがポートの状態をどのように判断しているかを確認して�
 1. [待受ポートとNmapによるサービス検出](./01-port-scan-and-service-detection.md)
 2. [Firewallとfilteredポート](./02-firewall-and-filtered-ports.md)
 3. [TCP SYN Scanのパケット解析](./03-syn-scan-packet-analysis.md)
+4. [closedポートとfilteredポートのSYN Scan比較](./04-closed-port-syn-scan.md)
 
 ## 現在までに確認したこと
 
@@ -29,11 +30,12 @@ Nmapがポートの状態をどのように判断しているかを確認して�
 - UFWで通信を許可すると `filtered` から `open` に変化することを確認した
 - TCP SYN Scanの通信を `tcpdump` で観察した
 - openなポートでは `SYN → SYN/ACK → RST` が発生することを確認した
-- 通常のTCP 3-way handshakeとSYN Scanの違いを確認した
+- closedなポートでは `SYN → RST/ACK` が発生することを確認した
+- filteredなポートではSYNに対する応答が返らない場合があることを確認した
+- Nmapの `open`・`closed`・`filtered` の判定をパケットレベルで比較した
 
 ## Next
 
-次はclosedポートに対してTCP SYN Scanを実行し、
-openポートの場合とパケットの応答を比較する。
-
-その後、必要に応じて `open`・`closed`・`filtered` の違いを整理する。
+次はTCP Connect ScanとTCP SYN Scanを比較し、
+TCP接続を最後まで成立させる場合と、
+Half-open Scanとの違いを確認する。
