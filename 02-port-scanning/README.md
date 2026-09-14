@@ -21,6 +21,7 @@ Nmapがポートの状態をどのように判断しているかを確認して�
 3. [TCP SYN Scanのパケット解析](./03-syn-scan-packet-analysis.md)
 4. [closedポートとfilteredポートのSYN Scan比較](./04-closed-port-syn-scan.md)
 5. [TCP Connect ScanとSYN Scanの比較](./05-tcp-connect-vs-syn-scan.md)
+6. [UDP Scanとclosed・open|filteredの比較](./06-udp-scan.md)
 
 ## 現在までに確認したこと
 
@@ -30,17 +31,27 @@ Nmapがポートの状態をどのように判断しているかを確認して�
 - UFWによってポートが `filtered` になることを確認した
 - UFWで通信を許可すると `filtered` から `open` に変化することを確認した
 - TCP SYN Scanの通信を `tcpdump` で観察した
-- openなポートでは `SYN → SYN/ACK → RST` が発生することを確認した
-- closedなポートでは `SYN → RST/ACK` が発生することを確認した
-- filteredなポートではSYNに対する応答が返らない場合があることを確認した
-- Nmapの `open`・`closed`・`filtered` の判定をパケットレベルで比較した
+- openなTCPポートでは `SYN → SYN/ACK → RST` が発生することを確認した
+- closedなTCPポートでは `SYN → RST/ACK` が発生することを確認した
+- filteredなTCPポートではSYNに対する応答が返らない場合があることを確認した
 - TCP Connect Scanでは通常の3-way handshakeが完了することを確認した
-- TCP Connect ScanとTCP SYN Scanでは、同じ `open` 判定でも通信方法が異なることを確認した
+- TCP Connect ScanとTCP SYN Scanでは同じ `open` 判定でも通信方法が異なることを確認した
+- UDP ScanではTCPのような3-way handshakeが存在しないことを確認した
+- closedなUDPポートではICMP Port Unreachableが返ることを確認した
+- UDPで応答がない場合に `open|filtered` と判定されることを確認した
+- TCP ScanとUDP ScanではNmapのポート状態の判定方法が異なることを確認した
 
 ## Next
 
-次はUDP Scanを実行し、
-TCPスキャンとの違いを確認する。
+次はUDP 9999番ポートで実際にサービスを起動し、
+Nmapで `open` と判定される場合を確認する。
 
-UDPではTCPのような3-way handshakeが存在しないため、
-Nmapがどのようにポート状態を判断するのかを観察する。
+これによりUDPの
+
+`closed`
+
+`open|filtered`
+
+`open`
+
+の違いを整理する。
