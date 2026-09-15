@@ -22,6 +22,7 @@ Nmapがポートの状態をどのように判断しているかを確認して�
 4. [closedポートとfilteredポートのSYN Scan比較](./04-closed-port-syn-scan.md)
 5. [TCP Connect ScanとSYN Scanの比較](./05-tcp-connect-vs-syn-scan.md)
 6. [UDP Scanとclosed・open|filteredの比較](./06-udp-scan.md)
+7. [UDPサービスとopenポートの確認](./07-udp-open-service.md)
 
 ## 現在までに確認したこと
 
@@ -29,29 +30,21 @@ Nmapがポートの状態をどのように判断しているかを確認して�
 - Kali LinuxからNmapを使用して外部から見えるポートを確認した
 - `nmap -sV` でサービスとソフトウェア情報を確認した
 - UFWによってポートが `filtered` になることを確認した
-- UFWで通信を許可すると `filtered` から `open` に変化することを確認した
-- TCP SYN Scanの通信を `tcpdump` で観察した
-- openなTCPポートでは `SYN → SYN/ACK → RST` が発生することを確認した
-- closedなTCPポートでは `SYN → RST/ACK` が発生することを確認した
-- filteredなTCPポートではSYNに対する応答が返らない場合があることを確認した
-- TCP Connect Scanでは通常の3-way handshakeが完了することを確認した
-- TCP Connect ScanとTCP SYN Scanでは同じ `open` 判定でも通信方法が異なることを確認した
-- UDP ScanではTCPのような3-way handshakeが存在しないことを確認した
-- closedなUDPポートではICMP Port Unreachableが返ることを確認した
+- TCP SYN Scanを `tcpdump` で観察した
+- TCPの `open`・`closed`・`filtered` をパケットレベルで比較した
+- TCP Connect ScanとTCP SYN Scanの違いを確認した
+- UDPにはTCPのような3-way handshakeが存在しないことを確認した
+- UDPのclosedポートではICMP Port Unreachableが返ることを確認した
 - UDPで応答がない場合に `open|filtered` と判定されることを確認した
-- TCP ScanとUDP ScanではNmapのポート状態の判定方法が異なることを確認した
+- UDPサービスが応答を返した場合に `open` と判定されることを確認した
+- UDPの `closed`・`open|filtered`・`open` を実際の通信で比較した
+- `ss`・UFW・tcpdump・Nmapを組み合わせてポート状態を確認した
 
 ## Next
 
-次はUDP 9999番ポートで実際にサービスを起動し、
-Nmapで `open` と判定される場合を確認する。
+次は攻撃側からポートを調査するだけでなく、
+スキャンを受けるUbuntu Server側の視点から通信を観察する。
 
-これによりUDPの
-
-`closed`
-
-`open|filtered`
-
-`open`
-
-の違いを整理する。
+複数ポートへのNmap SYN Scanを実行し、
+通常のTCP通信との違いや、
+ポートスキャン特有の通信パターンを確認する。
