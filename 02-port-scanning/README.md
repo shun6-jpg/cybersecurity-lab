@@ -23,6 +23,7 @@ Nmapがポートの状態をどのように判断しているかを確認して�
 5. [TCP Connect ScanとSYN Scanの比較](./05-tcp-connect-vs-syn-scan.md)
 6. [UDP Scanとclosed・open|filteredの比較](./06-udp-scan.md)
 7. [UDPサービスとopenポートの確認](./07-udp-open-service.md)
+8. [複数ポートへのSYN Scanと通常通信の比較](./08-multi-port-syn-scan.md)
 
 ## 現在までに確認したこと
 
@@ -38,13 +39,16 @@ Nmapがポートの状態をどのように判断しているかを確認して�
 - UDPで応答がない場合に `open|filtered` と判定されることを確認した
 - UDPサービスが応答を返した場合に `open` と判定されることを確認した
 - UDPの `closed`・`open|filtered`・`open` を実際の通信で比較した
+- 複数ポートへのSYN Scanでは短時間に多数のSYNが送信されることを確認した
+- 応答がないポートに対してNmapがSYNを再送する場合があることを確認した
+- SYN Scanと通常のSSH接続ではTCP接続開始時の動作が異なることを確認した
+- ポートスキャン検出では単一パケットではなく通信パターンを見ることが重要だと確認した
 - `ss`・UFW・tcpdump・Nmapを組み合わせてポート状態を確認した
 
 ## Next
 
-次は攻撃側からポートを調査するだけでなく、
-スキャンを受けるUbuntu Server側の視点から通信を観察する。
+次回はこれまで使用したNmapの代表的なスキャン方式と、
+各ポート状態の判定方法を整理する。
 
-複数ポートへのNmap SYN Scanを実行し、
-通常のTCP通信との違いや、
-ポートスキャン特有の通信パターンを確認する。
+そのまとめをもって、
+`02-port-scanning` 章を一区切りとする。
