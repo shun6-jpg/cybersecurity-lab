@@ -129,6 +129,9 @@ Nmapが再びSYNを送信している様子も確認した。
 Nmapはすぐに判断せず、
 再試行を行うことがある。
 
+### 無応答ポートへの再送
+![resending nmap](./images/08-multi-port-syn-scan-resending-tcpdump.png)
+
 このため受信側から見ると、
 
     複数ポートへSYN
