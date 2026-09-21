@@ -38,19 +38,24 @@ Kali LinuxとUbuntu Serverを使用して、
 ## Records / 実験記録
 
 1. [HTTP平文通信のパケットキャプチャ](./01-http-plaintext-capture.md)
+2. [HTTP通信をEthernet・IP・TCP・HTTPの各層から解析](./02-http-layer-analysis.md)
 
 ## 現在までに確認したこと
 
-- `tcpdump -A` でパケットのペイロードをASCII表示した
+- `tcpdump -A` でHTTP通信の内容をASCII表示した
 - HTTPリクエストの `GET` を確認した
-- `Host` ヘッダを確認した
-- `User-Agent` を確認した
 - HTTPレスポンスの `200 OK` を確認した
-- ApacheのServerヘッダを確認した
-- `Content-Type: text/html` を確認した
-- HTTPレスポンスのHTML本文を確認した
-- TCPのペイロードとしてHTTPデータが運ばれていることを確認した
-- HTTP通信では内容を平文で読み取れることを確認した
+- HTTPヘッダやHTML本文を平文で確認した
+- `tcpdump -e` でEthernetヘッダを表示した
+- 送信元・宛先MACアドレスを確認した
+- EtherTypeがIPv4であることを確認した
+- 送信元・宛先IPアドレスを確認した
+- TCPの送信元・宛先ポート番号を確認した
+- TCPのペイロードとしてHTTPデータが送信されることを確認した
+- Ethernet・IP・TCP・HTTPが入れ子構造になっていることを確認した
+- `tcpdump -X` でパケットを16進数とASCIIの両方で表示した
+- HTTPの文字列もバイト列として通信されていることを確認した
+- HTTPリクエストとレスポンスが同じTCP接続上でやり取りされることを確認した
 
 ## この章の目標
 
@@ -73,6 +78,10 @@ Kali LinuxとUbuntu Serverを使用して、
     ↓
     どのプロトコルの情報なのか
     ↓
+    どの層のヘッダなのか
+    ↓
+    ペイロードには何が入っているのか
+    ↓
     暗号化された場合は何が変わるのか
 
 まで関連付けて理解する。
@@ -80,11 +89,15 @@ Kali LinuxとUbuntu Serverを使用して、
 ## Next
 
 次は、
-HTTP通信を構成しているパケットをより詳しく確認し、
+パケットの16進数表示を利用して、
 
-    Ethernet
-    IP
-    TCP
-    HTTP
+    IP Header
+        ↓
+    TCP Header
+        ↓
+    HTTP Data
 
-という各層の情報を分けて解析する。
+の境界を確認する。
+
+実際のバイト列と、
+tcpdumpが表示している情報を対応させて解析する。
