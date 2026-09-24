@@ -34,12 +34,15 @@ Kali LinuxとUbuntu Serverを使用して、
 - curl
 - Wireshark / tshark
 - Apache HTTP Server
+- OpenSSL
+- Python
 
 ## Records / 実験記録
 
 1. [HTTP平文通信のパケットキャプチャ](./01-http-plaintext-capture.md)
 2. [HTTP通信をEthernet・IP・TCP・HTTPの各層から解析](./02-http-layer-analysis.md)
 3. [IPv4・TCPヘッダとHTTPデータの境界解析](./03-ip-tcp-http-boundary.md)
+4. [HTTPとHTTPSのパケットキャプチャ比較](./04-http-vs-https.md)
 
 ## 現在までに確認したこと
 
@@ -54,16 +57,16 @@ Kali LinuxとUbuntu Serverを使用して、
 - TCPの送信元・宛先ポート番号を確認した
 - Ethernet・IP・TCP・HTTPが入れ子構造になっていることを確認した
 - `tcpdump -X` でパケットを16進数とASCIIで表示した
-- 16進数2桁が1バイトであることを確認した
-- IPv4ヘッダのIHLからヘッダ長を算出した
-- IPv4ヘッダ内のバイト列からIPアドレスを読み取った
-- IPv4 Protocol値 `06` がTCPを表すことを確認した
-- TCPヘッダから送信元・宛先ポート番号を読み取った
-- TCP Data OffsetからTCPヘッダ長を算出した
-- IPヘッダとTCPヘッダの境界を確認した
+- IPv4ヘッダとTCPヘッダの境界を確認した
 - TCPヘッダとHTTPデータの境界を確認した
-- HTTPの `GET` が実際にはバイト列として送信されていることを確認した
-- tcpdumpが実際のバイト列を解析して表示していることを確認した
+- HTTP文字列が実際にはバイト列として送信されていることを確認した
+- HTTPSテストサーバーを構築した
+- TCP 443番ポートでHTTPS通信を行った
+- HTTPではGETやHTML本文を平文で確認できることを確認した
+- HTTPSではHTTPデータがTLSによって暗号化されることを確認した
+- HTTPSでもIPアドレス・ポート番号などは確認できることを確認した
+- TLSがTCPとHTTPの間でHTTPデータを暗号化することを確認した
+- tcpdumpで監視するインターフェースと通信経路の関係を確認した
 
 ## この章の目標
 
@@ -76,6 +79,7 @@ Kali LinuxとUbuntu Serverを使用して、
 - アプリケーション層のデータを確認する
 - HTTP通信を解析する
 - 暗号化されたHTTPS通信と比較する
+- TLS通信を観察する
 - Wireshark / tsharkを使用してパケットを詳しく解析する
 
 ことを目標とする。
@@ -88,27 +92,22 @@ Kali LinuxとUbuntu Serverを使用して、
     ↓
     どの層のヘッダなのか
     ↓
-    実際のバイト列ではどこに格納されているのか
+    どこから暗号化されているのか
     ↓
-    暗号化された場合は何が変わるのか
+    暗号化後も何が観察できるのか
 
 まで関連付けて理解する。
 
 ## Next
 
-次はHTTPS通信をキャプチャし、
+次はHTTPS通信を構成するTLSを詳しく観察する。
 
-    HTTP
-    ↓
-    平文で内容を確認できる
+    TCP Connection
+        ↓
+    TLS Handshake
+        ↓
+    Encrypted Application Data
 
-場合と、
-
-    HTTPS
-    ↓
-    TLSによって暗号化される
-
-場合を比較する。
-
-暗号化後も確認できる情報と、
-確認できなくなるHTTPデータの違いを観察する。
+という流れを確認し、
+HTTPデータが暗号化される前に
+どのような処理が行われているのかを解析する。
