@@ -31,8 +31,9 @@ Kali LinuxとUbuntu Serverを使用して、
 主に以下のツールを使用します。
 
 - tcpdump
+- tshark
 - curl
-- Wireshark / tshark
+- Wireshark
 - Apache HTTP Server
 - OpenSSL
 - Python
@@ -43,6 +44,7 @@ Kali LinuxとUbuntu Serverを使用して、
 2. [HTTP通信をEthernet・IP・TCP・HTTPの各層から解析](./02-http-layer-analysis.md)
 3. [IPv4・TCPヘッダとHTTPデータの境界解析](./03-ip-tcp-http-boundary.md)
 4. [HTTPとHTTPSのパケットキャプチャ比較](./04-http-vs-https.md)
+5. [TLSハンドシェイクとClientHelloの解析](./05-tls-handshake-analysis.md)
 
 ## 現在までに確認したこと
 
@@ -53,20 +55,23 @@ Kali LinuxとUbuntu Serverを使用して、
 - `tcpdump -e` でEthernetヘッダを確認した
 - 送信元・宛先MACアドレスを確認した
 - EtherTypeがIPv4であることを確認した
-- 送信元・宛先IPアドレスを確認した
-- TCPの送信元・宛先ポート番号を確認した
-- Ethernet・IP・TCP・HTTPが入れ子構造になっていることを確認した
+- IP・TCP・HTTPが入れ子構造になっていることを確認した
 - `tcpdump -X` でパケットを16進数とASCIIで表示した
 - IPv4ヘッダとTCPヘッダの境界を確認した
 - TCPヘッダとHTTPデータの境界を確認した
-- HTTP文字列が実際にはバイト列として送信されていることを確認した
-- HTTPSテストサーバーを構築した
-- TCP 443番ポートでHTTPS通信を行った
-- HTTPではGETやHTML本文を平文で確認できることを確認した
+- HTTP文字列がバイト列として送信されていることを確認した
+- HTTPとHTTPSのパケット内容を比較した
 - HTTPSではHTTPデータがTLSによって暗号化されることを確認した
-- HTTPSでもIPアドレス・ポート番号などは確認できることを確認した
-- TLSがTCPとHTTPの間でHTTPデータを暗号化することを確認した
-- tcpdumpで監視するインターフェースと通信経路の関係を確認した
+- HTTPSでもIPアドレスやTCPポート番号は確認できることを確認した
+- TLSがTCPとHTTPの間で動作することを確認した
+- tsharkでTLS通信を解析した
+- ClientHelloとServerHelloを確認した
+- TLSハンドシェイク後にApplication Dataが送信されることを確認した
+- ClientHelloのCipher Suitesを確認した
+- ALPNで `h2` と `http/1.1` が提示されることを確認した
+- supported_versionsでTLS 1.3対応を確認した
+- TLS 1.3のlegacy Versionフィールドについて確認した
+- TLS 1.3ではServerHello以降のハンドシェイク情報の多くが暗号化されることを確認した
 
 ## この章の目標
 
@@ -78,36 +83,41 @@ Kali LinuxとUbuntu Serverを使用して、
 - TCP・UDPヘッダを確認する
 - アプリケーション層のデータを確認する
 - HTTP通信を解析する
-- 暗号化されたHTTPS通信と比較する
-- TLS通信を観察する
+- HTTPS通信とHTTP通信を比較する
+- TLSハンドシェイクを解析する
+- 証明書や鍵交換の仕組みを理解する
 - Wireshark / tsharkを使用してパケットを詳しく解析する
 
 ことを目標とする。
 
 単にパケットをキャプチャするだけではなく、
 
-    なぜこの情報が見えるのか
-    ↓
-    どのプロトコルの情報なのか
-    ↓
-    どの層のヘッダなのか
-    ↓
-    どこから暗号化されているのか
-    ↓
-    暗号化後も何が観察できるのか
+    TCP接続
+        ↓
+    TLSハンドシェイク
+        ↓
+    暗号化通信の確立
+        ↓
+    Application Data
 
-まで関連付けて理解する。
+というHTTPS通信全体の流れを理解する。
 
 ## Next
 
-次はHTTPS通信を構成するTLSを詳しく観察する。
+次は、
+TLSハンドシェイクで使用される、
 
-    TCP Connection
+    証明書
         ↓
-    TLS Handshake
+    公開鍵
         ↓
-    Encrypted Application Data
+    鍵交換
+        ↓
+    共通鍵
+        ↓
+    Application Dataの暗号化
 
-という流れを確認し、
-HTTPデータが暗号化される前に
-どのような処理が行われているのかを解析する。
+という関係を整理する。
+
+HTTPSがどのように安全な暗号化通信を確立しているのかを
+鍵の観点から理解する。
