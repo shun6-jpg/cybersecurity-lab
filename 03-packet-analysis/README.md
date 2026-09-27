@@ -45,33 +45,31 @@ Kali LinuxとUbuntu Serverを使用して、
 3. [IPv4・TCPヘッダとHTTPデータの境界解析](./03-ip-tcp-http-boundary.md)
 4. [HTTPとHTTPSのパケットキャプチャ比較](./04-http-vs-https.md)
 5. [TLSハンドシェイクとClientHelloの解析](./05-tls-handshake-analysis.md)
+6. [TLS証明書・公開鍵・鍵交換・共通鍵の概念整理](./06-tls-key-concepts.md)
 
 ## 現在までに確認したこと
 
-- `tcpdump -A` でHTTP通信の内容をASCII表示した
-- HTTPリクエストの `GET` を確認した
-- HTTPレスポンスの `200 OK` を確認した
-- HTTPヘッダやHTML本文を平文で確認した
-- `tcpdump -e` でEthernetヘッダを確認した
-- 送信元・宛先MACアドレスを確認した
-- EtherTypeがIPv4であることを確認した
-- IP・TCP・HTTPが入れ子構造になっていることを確認した
+- HTTPリクエスト・レスポンスを平文で確認した
+- HTTPヘッダやHTML本文をtcpdumpから読み取った
+- Ethernet・IP・TCP・HTTPの各層を確認した
+- MACアドレス・IPアドレス・TCPポート番号を確認した
 - `tcpdump -X` でパケットを16進数とASCIIで表示した
 - IPv4ヘッダとTCPヘッダの境界を確認した
 - TCPヘッダとHTTPデータの境界を確認した
-- HTTP文字列がバイト列として送信されていることを確認した
-- HTTPとHTTPSのパケット内容を比較した
+- HTTP文字列を実際のバイト列から確認した
+- HTTPとHTTPSの通信内容を比較した
 - HTTPSではHTTPデータがTLSによって暗号化されることを確認した
 - HTTPSでもIPアドレスやTCPポート番号は確認できることを確認した
-- TLSがTCPとHTTPの間で動作することを確認した
 - tsharkでTLS通信を解析した
 - ClientHelloとServerHelloを確認した
-- TLSハンドシェイク後にApplication Dataが送信されることを確認した
-- ClientHelloのCipher Suitesを確認した
+- Cipher Suitesを確認した
+- supported_groupsを確認した
 - ALPNで `h2` と `http/1.1` が提示されることを確認した
 - supported_versionsでTLS 1.3対応を確認した
-- TLS 1.3のlegacy Versionフィールドについて確認した
-- TLS 1.3ではServerHello以降のハンドシェイク情報の多くが暗号化されることを確認した
+- Application Dataが暗号化されていることを確認した
+- 証明書・公開鍵・秘密鍵の役割を整理した
+- 鍵交換と共通鍵暗号の関係を整理した
+- 実際に観測した情報とTLSの一般的な仕組みを区別した
 
 ## この章の目標
 
@@ -83,41 +81,47 @@ Kali LinuxとUbuntu Serverを使用して、
 - TCP・UDPヘッダを確認する
 - アプリケーション層のデータを確認する
 - HTTP通信を解析する
-- HTTPS通信とHTTP通信を比較する
+- HTTPとHTTPSを比較する
 - TLSハンドシェイクを解析する
-- 証明書や鍵交換の仕組みを理解する
-- Wireshark / tsharkを使用してパケットを詳しく解析する
+- 証明書と暗号鍵の基本的な役割を理解する
+- tcpdump / tsharkを使用して通信を解析する
 
 ことを目標とする。
 
-単にパケットをキャプチャするだけではなく、
+単にパケットを表示するだけでなく、
 
-    TCP接続
+    Ethernet
         ↓
-    TLSハンドシェイク
+    IP
         ↓
-    暗号化通信の確立
+    TCP
+        ↓
+    TLS / HTTP
         ↓
     Application Data
 
-というHTTPS通信全体の流れを理解する。
+という通信の階層と、
+
+    平文
+        ↓
+    TLSハンドシェイク
+        ↓
+    暗号化通信
+
+という変化を関連付けて理解する。
 
 ## Next
 
-次は、
-TLSハンドシェイクで使用される、
+次回は、
+`03-packet-analysis` で行った実験全体をまとめる。
 
-    証明書
-        ↓
-    公開鍵
-        ↓
-    鍵交換
-        ↓
-    共通鍵
-        ↓
-    Application Dataの暗号化
+そのまとめをもって、
+この章を一区切りとする。
 
-という関係を整理する。
+その後、
 
-HTTPSがどのように安全な暗号化通信を確立しているのかを
-鍵の観点から理解する。
+[04-ids-suricata](../04-ids-suricata/)
+
+へ進み、
+これまで観察してきた通信を
+IDSがどのように検知するのかを学ぶ。
