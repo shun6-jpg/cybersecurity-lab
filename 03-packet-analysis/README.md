@@ -1,39 +1,35 @@
 # Packet Analysis / パケット解析
 
 Kali LinuxとUbuntu Serverを使用して、
-ネットワーク上を流れるパケットの内容を解析する実験記録です。
+ネットワーク上を流れるパケットを解析した記録です。
 
-これまでの `01-network-basics` と `02-port-scanning` では、
+この章では、
+HTTP平文通信からTLS暗号化通信までを対象に、
 
-- IPアドレス
-- ARP
-- ICMP
+- Ethernet
+- IPv4
 - TCP
-- UDP
-- ポート
-- Firewall
-- Nmap
+- HTTP
+- TLS
 
-などを使用して、
-通信の仕組みやポート状態を確認しました。
-
-この章ではさらに一段深く、
-実際にパケットの中にどのような情報が含まれているのかを観察します。
+の関係を実際のパケットから確認しました。
 
 ## Environment / 環境
 
 - Windows 11 Host
 - VMware Workstation
 - Kali Linux
+  - `192.168.10.129`
 - Ubuntu Server 24.04 LTS
-- Host-only Network: `192.168.10.0/24`
+  - `192.168.10.128`
+- Host-only Network
+  - `192.168.10.0/24`
 
-主に以下のツールを使用します。
+主に使用したツール：
 
 - tcpdump
 - tshark
 - curl
-- Wireshark
 - Apache HTTP Server
 - OpenSSL
 - Python
@@ -46,82 +42,122 @@ Kali LinuxとUbuntu Serverを使用して、
 4. [HTTPとHTTPSのパケットキャプチャ比較](./04-http-vs-https.md)
 5. [TLSハンドシェイクとClientHelloの解析](./05-tls-handshake-analysis.md)
 6. [TLS証明書・公開鍵・鍵交換・共通鍵の概念整理](./06-tls-key-concepts.md)
+7. [Packet Analysis Summary](./07-packet-analysis-summary.md)
 
-## 現在までに確認したこと
+## この章で確認したこと
 
-- HTTPリクエスト・レスポンスを平文で確認した
-- HTTPヘッダやHTML本文をtcpdumpから読み取った
-- Ethernet・IP・TCP・HTTPの各層を確認した
-- MACアドレス・IPアドレス・TCPポート番号を確認した
-- `tcpdump -X` でパケットを16進数とASCIIで表示した
-- IPv4ヘッダとTCPヘッダの境界を確認した
-- TCPヘッダとHTTPデータの境界を確認した
-- HTTP文字列を実際のバイト列から確認した
-- HTTPとHTTPSの通信内容を比較した
-- HTTPSではHTTPデータがTLSによって暗号化されることを確認した
-- HTTPSでもIPアドレスやTCPポート番号は確認できることを確認した
-- tsharkでTLS通信を解析した
-- ClientHelloとServerHelloを確認した
-- Cipher Suitesを確認した
-- supported_groupsを確認した
-- ALPNで `h2` と `http/1.1` が提示されることを確認した
-- supported_versionsでTLS 1.3対応を確認した
-- Application Dataが暗号化されていることを確認した
-- 証明書・公開鍵・秘密鍵の役割を整理した
-- 鍵交換と共通鍵暗号の関係を整理した
-- 実際に観測した情報とTLSの一般的な仕組みを区別した
+### HTTP
 
-## この章の目標
+- HTTPリクエストを平文で確認
+- HTTPレスポンスを平文で確認
+- HTTPヘッダを確認
+- HTML本文を確認
 
-この章では、
+### Network Layers
 
-- パケットの各層を理解する
-- Ethernetフレームを確認する
-- IPヘッダを確認する
-- TCP・UDPヘッダを確認する
-- アプリケーション層のデータを確認する
-- HTTP通信を解析する
-- HTTPとHTTPSを比較する
-- TLSハンドシェイクを解析する
-- 証明書と暗号鍵の基本的な役割を理解する
-- tcpdump / tsharkを使用して通信を解析する
+- Ethernet
+- IPv4
+- TCP
+- HTTP
 
-ことを目標とする。
+の階層構造を確認した。
 
-単にパケットを表示するだけでなく、
+### Packet Bytes
 
-    Ethernet
-        ↓
-    IP
-        ↓
-    TCP
-        ↓
-    TLS / HTTP
-        ↓
-    Application Data
+`tcpdump -X` を使用して、
+実際のパケットを16進数で解析した。
 
-という通信の階層と、
+- IPv4 Header
+- TCP Header
+- HTTP Data
 
-    平文
-        ↓
-    TLSハンドシェイク
-        ↓
-    暗号化通信
+の境界を確認した。
 
-という変化を関連付けて理解する。
+### HTTPS
 
-## Next
+HTTPとHTTPSを比較し、
+HTTPSではHTTPデータが
+TLSによって暗号化されることを確認した。
 
-次回は、
-`03-packet-analysis` で行った実験全体をまとめる。
+一方、
 
-そのまとめをもって、
-この章を一区切りとする。
+- IPアドレス
+- TCPポート番号
+- TCP Flags
+- パケットサイズ
 
-その後、
+などは暗号化されず、
+パケットキャプチャから確認できた。
+
+### TLS
+
+tsharkを使用して、
+
+- ClientHello
+- ServerHello
+- Cipher Suites
+- supported_groups
+- signature_algorithms
+- ALPN
+- supported_versions
+- Application Data
+
+を確認した。
+
+### Certificates and Keys
+
+TLS通信で使用される、
+
+- 証明書
+- 公開鍵
+- 秘密鍵
+- 鍵交換
+- 共通鍵
+
+の役割を整理した。
+
+また、
+
+    実際に観測した情報
+
+と、
+
+    TLS仕様上の仕組み
+
+を分けて扱う重要性を確認した。
+
+## この章で身についたこと
+
+この章を通して、
+
+- パケットキャプチャの読み方
+- プロトコル階層の考え方
+- IP / TCPヘッダの基本的な読み方
+- HTTP通信の解析
+- HTTPとHTTPSの違い
+- TLSハンドシェイクの基本
+- 暗号化通信でも確認できる情報
+- 証明書と暗号鍵の役割
+- 観測事実と推測を区別する考え方
+
+を学んだ。
+
+## Status
+
+`03-packet-analysis` 完了。
+
+## Next Chapter
 
 [04-ids-suricata](../04-ids-suricata/)
 
-へ進み、
-これまで観察してきた通信を
-IDSがどのように検知するのかを学ぶ。
+次の章では、
+Suricataを使用して、
+
+- IDSの基本
+- Suricataのインストールと設定
+- ルール
+- ポートスキャンの検知
+- HTTP / TLS通信イベント
+- アラートログ
+
+について学習する。
