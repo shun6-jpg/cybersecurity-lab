@@ -43,21 +43,32 @@ Ubuntu Server上でSuricataを動作させ、
 ## Records / 実験記録
 
 1. [Suricata Setup and HTTP Event Detection](./01-suricata-setup.md)
+2. [Suricata Custom Rules](./02-suricata-rules.md)
 
 ## 現在までに確認したこと
 
-- Suricata 7.0.3がインストールされていることを確認
+### Suricata Setup
+
+- Suricata 7.0.3の動作を確認
 - `HOME_NET` を `192.168.10.0/24` に設定
-- `ens33` を監視インターフェースに設定
+- `ens33` を監視対象に設定
 - `suricata-update` で検知ルールを取得
-- 約53,000ルールが有効化された
 - `suricata -T` で設定テストに成功
-- Suricata Engineの起動を確認
-- `eve.json` の生成を確認
-- DHCP / DNS / Flow / HTTPなどのイベントを確認
-- KaliからのHTTP通信をSuricataが自動解析することを確認
-- HTTP Method、URL、User-Agent、Statusなどを確認
-- `fast.log` にアラートがない場合でも通信解析は行われていることを確認
+- `eve.json` にイベントが記録されることを確認
+- HTTP通信を自動解析できることを確認
+
+### Custom Rules
+
+- `local.rules` を作成
+- `rule-files` に自作ルールを追加
+- ICMP Echo Requestを検知するルールを作成
+- `itype:8` でping要求を指定
+- `sid:1000001` を自作ルールIDとして設定
+- 自作ルールを含む設定テストに成功
+- KaliからUbuntuへのpingを実行
+- `LAB ICMP Ping detected` のアラートを確認
+- `fast.log` に検知結果が記録されることを確認
+- ping 3回に対してアラートも3回発生することを確認
 
 ## この章の目標
 
@@ -92,15 +103,19 @@ Ubuntu Server上でSuricataを動作させ、
 
 次回は、
 
-[02-suricata-rules](./02-suricata-rules.md)
+[03-port-scan-detection](./03-port-scan-detection.md)
 
 として、
-Suricata独自ルールを作成する。
+Nmapによる複数ポートへのアクセスを
+Suricataで検知する。
 
-単に通信を解析するだけでなく、
+これまでのポートスキャン実験と
+IDSによる検知をつなげ、
 
-    条件に一致した通信を検知
+    Scan
         ↓
-    alert
+    Detection
+        ↓
+    Alert
 
-までを実際に確認する。
+という流れを確認する。
