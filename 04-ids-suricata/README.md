@@ -44,6 +44,7 @@ Ubuntu Server上でSuricataを動作させ、
 
 1. [Suricata Setup and HTTP Event Detection](./01-suricata-setup.md)
 2. [Suricata Custom Rules](./02-suricata-rules.md)
+3. [Port Scan Detection with Suricata](./03-port-scan-detection.md)
 
 ## 現在までに確認したこと
 
@@ -60,15 +61,24 @@ Ubuntu Server上でSuricataを動作させ、
 ### Custom Rules
 
 - `local.rules` を作成
-- `rule-files` に自作ルールを追加
+- 自作ルールをSuricataへ読み込ませた
 - ICMP Echo Requestを検知するルールを作成
-- `itype:8` でping要求を指定
-- `sid:1000001` を自作ルールIDとして設定
-- 自作ルールを含む設定テストに成功
-- KaliからUbuntuへのpingを実行
-- `LAB ICMP Ping detected` のアラートを確認
-- `fast.log` に検知結果が記録されることを確認
-- ping 3回に対してアラートも3回発生することを確認
+- KaliからUbuntuへのpingを検知
+- `fast.log` に自作アラートが記録されることを確認
+
+### Port Scan Detection
+
+- TCP SYNを対象とするルールを作成
+- `flags:S` でSYNパケットを指定
+- `flow:stateless` を使用
+- `threshold` による回数ベースの検知を設定
+- `track by_src` で送信元IPごとに追跡
+- 10秒以内に5回以上のSYNを検知条件とした
+- KaliからNmap SYNスキャンを実行
+- Suricataで `LAB Possible TCP SYN Port Scan` を検知
+- Nmap側のスキャン結果とIDS側のアラートを対応させた
+- `tee` によるログ表示と保存を確認
+- thresholdの値によって誤検知とのバランスが変わることを理解した
 
 ## この章の目標
 
@@ -103,19 +113,15 @@ Ubuntu Server上でSuricataを動作させ、
 
 次回は、
 
-[03-port-scan-detection](./03-port-scan-detection.md)
+[04-http-tls-events](./04-http-tls-events.md)
 
 として、
-Nmapによる複数ポートへのアクセスを
-Suricataで検知する。
+SuricataがHTTPとTLS通信から
+どのような情報を抽出できるか確認する。
 
-これまでのポートスキャン実験と
-IDSによる検知をつなげ、
+HTTP平文通信とTLS暗号化通信を比較し、
 
-    Scan
-        ↓
-    Detection
-        ↓
-    Alert
+    暗号化される情報
+    暗号化されても観測できる情報
 
-という流れを確認する。
+をIDS側から整理する。
